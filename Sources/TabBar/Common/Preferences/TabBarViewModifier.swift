@@ -25,18 +25,22 @@ import SwiftUI
 
 struct TabBarViewModifier<TabItem: Tabbable>: ViewModifier {
     @EnvironmentObject private var selectionObject: TabBarSelection<TabItem>
-    
+    @State var displayed: Bool = false
     let item: TabItem
-    
+
     func body(content: Content) -> some View {
         Group {
-            if self.item == self.selectionObject.selection {
+            if displayed || self.item == self.selectionObject.selection {
                 content
+                    .opacity((displayed && self.item == self.selectionObject.selection) ? 1 : 0)
+                    .onAppear {
+                        displayed = true
+                    }
             } else {
                 Color.clear
             }
         }
-        .preference(key: TabBarPreferenceKey.self, value: [self.item])
+        .preference(key: TabBarPreferenceKey.self, value: [item])
     }
 }
 
